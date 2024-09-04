@@ -7,3 +7,5 @@ FROM arbennett/has-tools
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 RUN pip install --quiet --no-input jupyterlab-myst
+WORKDIR "/workspaces/"
+RUN git clone https://github.com/HAS-Tools-Fall-2024/CourseMaterials24.git
