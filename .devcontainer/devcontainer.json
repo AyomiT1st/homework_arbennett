@@ -2,7 +2,8 @@
 	"name": "Anaconda (Python 3)",
 	"build": { 
 		"context": "..",
-		"dockerfile": "Dockerfile"
+		"dockerfile": "Dockerfile",
+		"workspaceFolder": "/workspaces",
 	},
 	//"features": {
 	//	"ghcr.io/devcontainers/features/conda:1": {}
