@@ -3,3 +3,4 @@ This is a template repository that will be set up for each student as a place to
 
 I am making changes for homework 1. 
 Following along in office hours
+And adding more stuff
