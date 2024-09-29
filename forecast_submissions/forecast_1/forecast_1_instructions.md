@@ -3,11 +3,10 @@
 ## Overview
 In this assignment, you will produce a 1-week and 2-week streamflow forecast for the Verde River near Camp Verde, AZ. You'll use your existing knowledge of NumPy, Matplotlib, and pandas, along with new skills in API data retrieval, to access and analyze USGS streamflow data and DAYMET meteorological data, and perform numerical/statistical analysis to develop forecasts.
 
-This assignnment will be due on October 7th, 2021, @ 11:59pm. As such, your forecast should be for the periods of October 7th - October 14th, and October 7th - October 21st. Forecasts should be given as a single value for each period in cubic feet per second (cfs).
+This assignnment will be due on October 7th, 2021, @ 11:59pm. As such, your forecast should be for the periods of October 7th - October 14th, and October 7th - October 21st. Forecasts should be given as a single value for each period as the average streamflow in cubic feet per second (cfs).
 
 ## Assignment Details
-
-This assignment is your first opportunity to build an analysis from scratch, with no starter code provided. You will need to:
+This assignment is your first opportunity to build an analysis from scratch, with no starter code provided (though you should use code we have seen in class). You will need to:
 - Retrieve historical streamflow and meteorological data using APIs.
 - Analyze the data to identify patterns and relationships.
 - Develop a streamflow forecast using one of the suggested methods.
@@ -15,17 +14,16 @@ This assignment is your first opportunity to build an analysis from scratch, wit
 - Write a report explaining your methodology, findings, and forecast results.
 
 ### Rubric
-- Data Retrieval (20%)
+- Data Retrieval (15%)
     -   Pulling the correct USGS and DAYMET data
     -   Data cleaning and formatting
     -   Documenting the data retrieval process & building functions
-- Data Analysis (20%)
+- Data Analysis (25%)
     -   Performing exploratory data analysis including basic statistics and ensuring data quality (missing values, outliers)
-- Visualization (20%)
+- Visualization (30%)
     -   Creating informative visualizations that support the analysis
-    -   Using appropriate visualization types
-- Forecasting Method (0%, but up to 10% extra credit)
-- Report (40%)
+    -   Using appropriate visualization types, with clear labels and titles
+- Report (30%)
     -  Clear explanation of methodology and findings in plain language
     -  Thoughtful discussion of forecast results
     -  Suggestions for improving the chosen forecasting method
@@ -90,10 +88,10 @@ Choose one of the following methods to develop your 1-week and 2-week streamflow
 - **Steps**:
   - a. Prepare your data:
      - Align your streamflow, temperature, and precipitation data by date.
-     - Create lagged variables (e.g., streamflow from 1 day ago, 2 days ago, etc.) as potential predictors.
-     - Use historical data to create a training set (e.g., using data from 2010-2019).
+     - Create lagged variables (e.g., streamflow from 1 day ago, 2 days ago, etc.) as potential predictors. You are open to using any variables you think might be useful.
+     - Use historical data to create a training set (e.g., using data from 2000-2019).
   - b. Develop the regression model:
-     - Use scikit-learn's LinearRegression class to create your model.
+     - Use scikit-learn's LinearRegression class to create your model, or other model class if you prefer.
      - Consider which variables to include as predictors (e.g., lagged streamflow, recent precipitation, average temperature).
      - Fit the model on your training data.
   - c. Evaluate the model:
@@ -106,19 +104,13 @@ Choose one of the following methods to develop your 1-week and 2-week streamflow
 
 ### Submission Requirements
 1. A Jupyter notebook containing your report, code, analysis, and visualizations.
-2. A report (roughly 300-500 words, included in the jupyter notebook) explaining:
+2. A report (roughly 300-500 words, included in the jupyter notebook as markdown cells) explaining:
    - Your chosen forecasting method and why you selected it
    - Key findings from your data analysis
    - Your forecasting process, including any challenges encountered
    - Discussion of your forecast results and their potential accuracy
    - Suggestions for improving your chosen method
-3. Your 1-week and 2-week streamflow predictions as separate values. Make sure to print these out as clearly as possible in your notebook, preferably at the end.
-
-## Grading Criteria
-- Correct implementation & use of API data retrieval (15%)
-- Quality of data analysis and visualizations (25%)
-- Appropriate application of chosen forecasting method (30%)
-- Thoughtfulness of discussion and critical analysis (30%)
+3. Your 1-week and 2-week streamflow predictions as separate values. Make sure to print these out as clearly as possible in your notebook, preferably at the end. Forecast values should be reported as weekly average streamflow in cubic feet per second (cfs).
 
 ## Important Note
 The focus of this assignment is on synthesizing what we have covered in class so far as well as throwing you into a real world analysis situation where you do not have all the answers. Your grade will be based on your methodology, analysis, and explanations rather than the precision of your forecast. 
