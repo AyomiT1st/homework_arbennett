@@ -3,7 +3,7 @@
 ## Overview
 In this assignment, you will produce a 1-week and 2-week streamflow forecast for the Verde River near Camp Verde, AZ. You'll use your existing knowledge of NumPy, Matplotlib, and pandas, along with new skills in API data retrieval, to access and analyze USGS streamflow data and DAYMET meteorological data, and perform numerical/statistical analysis to develop forecasts.
 
-This assignnment will be due on October 7th, 2021, @ 11:59pm. As such, your forecast should be for the periods of October 7th - October 14th, and October 7th - October 21st. Forecasts should be given as a single value for each period as the average streamflow in cubic feet per second (cfs).
+This assignnment will be due on October 14th, 2021, @ 11:59pm. As such, your forecast should be for the periods of October 14th - October 21th, and October 21th - October 28st. Forecasts should be given as a single value for each period as the average streamflow in cubic feet per second (cfs).
 
 ## Assignment Details
 This assignment is your first opportunity to build an analysis from scratch, with no starter code provided (though you should use code we have seen in class). You will need to:
