@@ -8,10 +8,17 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-# TODO: Import argparse from the ArgumentParser module
+import argparse  # TODO: Import argparse from the ArgumentParser module
 pass 
 
 # TODO: Import the following functions from forecast_functions.functions
+from forecast_functions.functions import (
+    open_usgs_data,
+    open_gage_data,
+    open_gfs_data,
+    get_weather_forecast,
+    print_forecast_and_statistics,
+)
 # - open_usgs_data
 # - open_gage_data
 # - open_gfs_data
@@ -28,8 +35,30 @@ pass
 #      - determine_historic_value
 #      - convert_f_to_c
 
-
+def download_gage_data(save_location='./data'):
+    import os
+    import requests
+ 
+    # Create the data directory if it doesn't exist
+    if not os.path.exists(save_location):
+        os.makedirs(save_location)
+   
+    url = ('https://github.com/HAS-Tools-Fall-2024/homework_arbennett/'
+           'raw/refs/heads/main/data/gagesii_shapefile/gagesII_9322_sept30_2011')
+    extensions_to_download = ['.shp', '.dbf', '.prj', '.sbn', '.sbx', '.shx']
+ 
+    for extension in extensions_to_download:
+        r = requests.get(url + extension)
+        with open(f'{save_location}/gagesII_9322_sept30_2011{extension}', 'wb') as f:
+            f.write(r.content)
+        print(f'Downloaded: {url}{extension}')
+gage_id = '09506000'
+        
 def process_climatology(ds, quantiles=[0.05, 0.33, 0.5 ,0.66, 0.95]):
+    return (
+        ds.groupby("time.week")
+        .quantile(quantiles, dim="time")
+        )
     """
     Process climatology data to calculate quantiles for each week.
 
@@ -52,6 +81,9 @@ def process_climatology(ds, quantiles=[0.05, 0.33, 0.5 ,0.66, 0.95]):
 
 
 def determine_historic_value(historic_quantiles, current_value):
+    differences = abs(historic_quantiles - current_value)
+    closest_idx = differences.argmin(dim="quantile")
+    return historic_quantiles.isel(quantile=closest_idx)
     """
     Determine the closest historic quantile value to the current value.
 
@@ -72,10 +104,13 @@ def determine_historic_value(historic_quantiles, current_value):
     3. Use this index to select and return the closest quantile value from `historic_quantiles`.
 
     """
+
     pass
 
 
 def convert_f_to_c(temp):
+    return (temp - 32) * 5 / 9
+    
     """
     Convert temperature from Fahrenheit to Celsius.
 
@@ -96,43 +131,60 @@ def convert_f_to_c(temp):
 #       fill in the missing parts to complete the forecast.
 def main():
     # TODO: Create an ArgumentParser object, with name `parser`
-    parser = None # replace me
+    #sites = ["09503000", "09504500"]
+    parser = argparse.ArgumentParser(description="Streamflow Forecast Tool") # replace me
     # TODO:  add an argument for the USGS site number - default to '09506000'
+    parser.add_argument(
+        "--sites", type=str, 
+        nargs="+",  # Accept one or more site numbers as a list
+        default=["09506000"],  # Default to a single site if none are provided
+        help="USGS site numbers (space-separated for multiple)"
+    )
+    #parser.add_argument("--site", type=str, default="09506000", help="USGS site number")
     # TODO:  Now make the parser parse the arguments
+    args = parser.parse_args()
     # TODO:  Now pull the site number from the arguments
-    site = None # replace me
+    sites = args.sites # replace me
+    for site in sites:
+        print(f"\nProcessing forecast for site: {site}")
 
     # Set some dates for the forecast, notably (nothing to do here):
     # - The data begin date
     # - The date today
+
     # - The forecast date
     data_begin_date = '2015-01-15'
     date_today = pd.to_datetime('today').floor('D').strftime('%Y-%m-%d')
     forecast_date = pd.to_datetime(date_today) + pd.Timedelta('7D')
 
     # TODO: Get the current week of the year as an integer
-    current_week = None # replace me
+    current_week = pd.to_datetime(date_today).week # replace me
 
     # TODO: Get the forecast week of the year as an integer
-    forecast_week = None # replace me
+    forecast_week = pd.to_datetime(forecast_date).week # replace me
 
     # Open the gage data (nothing to do here)
-    gage_data = open_gage_data(site)
+    
+    #gage_data = open_gage_data(site)
 
     # TODO: Pull the site name from the gage data
-    site_name = None # replace me
+    download_gage_data()
+    gage_data = open_gage_data(site, './data/gagesII_9322_sept30_2011.shp')
+    site_name = gage_data["STANAME"] # replace me
 
     # TODO: Pull the latitude from the gage data
-    gage_lat = None # replace me
+    gage_lat = gage_data['LAT_GAGE'] # replace me
 
     # TODO: Pull the longitude from the gage data
-    gage_lon = None # replace me
+    gage_lon = gage_data['LNG_GAGE'] # replace me
 
     # Use the provided functions to open the USGS and GFS data
     # NOTE: Nothing here needs doing, but it won't work unless
     #       the prior steps are completed to pull the dates/locations
     usgs_data = open_usgs_data(site, data_begin_date, date_today)
+    print(usgs_data)
     gfs_data = open_gfs_data(gage_lat, gage_lon, data_begin_date, date_today)
+    print(gfs_data)
 
     # Calculate climatology for streamflow, temperature, and precipitation
     # TODO: You need to implement the `process_climatology` function for this step
@@ -156,25 +208,29 @@ def main():
 
     # TODO: Calculate the probable accumulated precipitation and average temperature for the forecast
     # NOTE: You need to calculate the mean of the product of 'rain_amount' and 'rain_prob' for precipitation
-    probable_accum_precip = None
+    probable_accum_precip = np.mean(
+        weather_forecast["rain_amount"] * weather_forecast["rain_prob"]
+    )
 
     # TODO: Calculate the probable average temperature for the forecast
     # NOTE: You need to calculate the mean of the average temperature for the forecast
-    probable_avg_temp = None
+    probable_avg_temp = np.mean(
+        (weather_forecast["min_temp"] + weather_forecast["max_temp"]) / 2
+    )
 
     # TODO: Get the latest streamflow value from the USGS data
     # NOTE: You need to calculate the mean of the last 7 days of streamflow data
-    latest_streamflow = None
+    latest_streamflow = usgs_data["streamflow"].isel(time=slice(-7, None)).mean()
 
 
     # TODO: You need to implement the `determine_historic_value` function for these steps
     # In order to do this you will need to first find the current timestamp in the climatology data
     # which encompasses the streamflow, temperature, and precipitation data. Basically you need to 
     # select the current or forecast week from the climatology data, as appropriate. 
-    historic_streamflow_quantiles = streamflow_climatology.isel#(TODO)
-    forecast_streamflow_quantiles = streamflow_climatology.isel#(TODO)
-    forecast_temperature_quantiles = temperature_climatology.isel#(TODO)
-    forecast_precipitation_quantiles = precipitation_climatology.isel#(TODO)
+    historic_streamflow_quantiles = streamflow_climatology.isel(week=current_week)
+    forecast_streamflow_quantiles = streamflow_climatology.isel(week=forecast_week)
+    forecast_temperature_quantiles = temperature_climatology.isel(week=current_week)
+    forecast_precipitation_quantiles = precipitation_climatology.isel(week=forecast_week)
 
 
     # TODO: Now implement the `determine_historic_value` function to find the closest historic quantile.
